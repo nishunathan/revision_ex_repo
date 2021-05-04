@@ -1,0 +1,27 @@
+Un-normalized form
+ --> Patient_drug_table(paNo,FullName,WardNo,WardName,BedNo,[DrugNo,Name,Description,Dosage,Method_Admin,Units_Day,StartDate,FinishDate])
+
+1NF
+ --> No repeating groups
+ --> Define primary key
+ Patient_drug_table(*paNo*,FullName,WardNo,WardName,BedNo,*DrugNo*,Name,Description,Dosage,Method_Admin,Units_Day,*StartDate*,FinishDate)
+--> prefixed with * identifies primary key
+
+2NF
+--> Check if non-key columns are fully dependent on primary key
+- FullName is only dependent on paNo
+- WardName is only dependent on WardNo
+
+Patient(*paNo*,FullName,BedNo,WardNo,WardName)
+Drug(*DrugNo*,Name,Description,Dosage,Method_Admin)
+Patient_Drug_table(*paNo*,*DrugNo*,Units_Day,*StartDate*,FinishDate)
+
+3NF
+--> transitive dependencies :Check if any non-key columns dependent on other non-key columns
+- WardNo and WardName are dependent
+Ward(*WardNo*,WardName)
+Patient(*paNo*,FullName,BedNo,WardNo)
+Drug(*DrugNo*,Name,Description,Dosage,Method_Admin)
+Patient_Drug_table(*paNo*,*DrugNo*,Units_Day,*StartDate*,FinishDate)
+
+
