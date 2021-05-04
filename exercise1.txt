@@ -1,0 +1,7 @@
+mkdir $HOME/dir_name
+cd $HOME/dir_name
+
+git init
+
+
+git remote add origin git@github.com:nishunathan/revision_ex_repo.git
