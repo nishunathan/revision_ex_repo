@@ -1,0 +1,28 @@
+db.restaurants.find({},{'name':1,'borough':1,'cuisine':1})
+{ "_id" : ObjectId("60903fa8afcb2823218b42be"), "borough" : "Bronx", "cuisine" : "Bakery", "name" : "Morris Park Bake Shop" }
+{ "_id" : ObjectId("60903fa8afcb2823218b42bf"), "borough" : "Brooklyn", "cuisine" : "Hamburgers", "name" : "Wendy'S" }
+{ "_id" : ObjectId("60903fa8afcb2823218b42c0"), "borough" : "Manhattan", "cuisine" : "Irish", "name" : "Dj Reynolds Pub And Restaurant" }
+{ "_id" : ObjectId("60903fa8afcb2823218b42c1"), "borough" : "Brooklyn", "cuisine" : "American", "name" : "Riviera Caterer" }
+{ "_id" : ObjectId("60903fa8afcb2823218b42c2"), "borough" : "Queens", "cuisine" : "Jewish/Kosher", "name" : "Tov Kosher Kitchen" }
+
+db.restaurants.find({borough:"Bronx"},{'name':1,'borough':1,'cuisine':1}).limit(5).skip(5)
+{ "_id" : ObjectId("60903fa8afcb2823218b42fa"), "borough" : "Bronx", "cuisine" : "American", "name" : "Manhem Club" }
+{ "_id" : ObjectId("60903fa8afcb2823218b4311"), "borough" : "Bronx", "cuisine" : "American", "name" : "The New Starling Athletic Club Of The Bronx" }
+{ "_id" : ObjectId("60903fa8afcb2823218b4329"), "borough" : "Bronx", "cuisine" : "American", "name" : "Yankee Tavern" }
+{ "_id" : ObjectId("60903fa8afcb2823218b433c"), "borough" : "Bronx", "cuisine" : "Irish", "name" : "Mcdwyers Pub" }
+{ "_id" : ObjectId("60903fa8afcb2823218b4355"), "borough" : "Bronx", "cuisine" : "American", "name" : "The Punch Bowl" }
+
+
+db.restaurants.find({borough:"Bronx","cuisine":{$in:["American","Chinese"]}},{'borough':1,'cuisine':1})
+
+
+db.restaurants.find({'borough':{$in:["Staten Island","Queens","Brooklyn"]}},{'name':1,'borough':1,'cuisine':1})
+
+db.getCollection('restaurants').find({"grades.score":{$not:{$gt:10}}},{"grades.score":1,restaurant_id:1,borough:1,cuisine:1,name:1})
+
+db.restaurants.find({grades:{$elemMatch:{'grade':"A","score":11,"date" : ISODate("2014-08-11T00:00:00Z")}}})
+
+db.restaurants.find({},{'cuisine':1,'borough':1}).sort({'cuisine':1,'borough':-1})
+
+db.restaurants.find({'address.street':{$exists:1}})
+db.restaurants.find({'address.street':{$exists:0}})
