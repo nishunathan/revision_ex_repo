@@ -1,0 +1,141 @@
+mysql -uroot
+
+create database vacation;
+grant all on vacation.* to 'guest'@'localhost';
+
+--> Provide access rights to guest user
+
+use vacation;
+
+select g.guestname,g.guestaddress from hotel h JOIN booking b ON h.hotelno=b.hotelno JOIN guest g ON b.guestno=g.guestno where h.city="Lon
+don" order by g.guestname;
++--------------+-----------------------+
+| guestname    | guestaddress          |
++--------------+-----------------------+
+| Carol Farrel | 6 Achray St, Glasgow  |
+| Joe Keogh    | 2 Fergus Dr, Aberdeen |
+| John Kay     | 56 High St, London    |
+| John Kay     | 56 High St, London    |
+| Mike Ritchie | 18 Tain St, London    |
+| Mike Ritchie | 18 Tain St, London    |
+| Tina Murphy  | 63 Well St, Glasgow   |
++--------------+-----------------------+
+7 rows in set (0.000 sec)
+
+select * from room where (type = "double" or type = "family") and price < 40 order by price;
++--------+---------+--------+-------+
+| roomno | hotelno | type   | price |
++--------+---------+--------+-------+
+|    801 | ch02    | double | 15.00 |
+|    601 | fb01    | double | 29.00 |
+|   1001 | dc01    | double | 30.00 |
+|   1101 | dc01    | family | 35.00 |
+|    701 | fb01    | family | 39.00 |
++--------+---------+--------+-------+
+5 rows in set (0.000 sec)
+
+MariaDB [vacation]> select * from booking where dateto is null;
++---------+---------+------------+--------+--------+
+| hotelno | guestno | datefrom   | dateto | roomno |
++---------+---------+------------+--------+--------+
+| ch01    |   10006 | 2020-04-21 | NULL   |   1101 |
+| dc01    |   10003 | 2020-05-20 | NULL   |   1001 |
+| fb01    |   10001 | 2020-05-01 | NULL   |    701 |
++---------+---------+------------+--------+--------+
+3 rows in set (0.000 sec)
+
+
+MariaDB [vacation]> select avg(price) from room;
++------------+
+| avg(price) |
++------------+
+|  35.748333 |
++------------+
+1 row in set (0.000 sec)
+
+select sum(price) from room where type = "double";
++------------+
+| sum(price) |
++------------+
+|     160.00 |
++------------+
+
+MariaDB [vacation]> SELECT COUNT(DISTINCT guestNo) FROM booking  WHERE (datefrom <= "2020-08-01" AND dateto >= "2020-08-01") OR  (datefrom >= "2020-08-01" AND datefrom <= "2020-08-31");
++-------------------------+
+| COUNT(DISTINCT guestNo) |
++-------------------------+
+|                       2 |
++-------------------------+
+1 row in set (0.000 sec)
+
+MariaDB [vacation]> UPDATE booking SET datefrom  = DATE_ADD(datefrom , INTERVAL 1 YEAR)
+    -> ;
+Query OK, 11 rows affected (0.011 sec)
+Rows matched: 11  Changed: 11  Warnings: 0
+
+
+MariaDB [vacation]> UPDATE booking SET dateto  = DATE_ADD(dateto , INTERVAL 1 YEAR);
+Query OK, 8 rows affected (0.011 sec)
+Rows matched: 11  Changed: 8  Warnings: 0
+
+select price,type from hotel h JOIN room r ON h.hotelno=r.hotelno where hotelname="The Tower Hotel";
++-------+--------+
+| price | type   |
++-------+--------+
+| 19.00 | single |
+| 29.00 | double |
+| 39.00 | family |
++-------+--------+
+3 rows in set (0.000 sec)
+
+select * from hotel h JOIN booking b ON h.hotelno=b.hotelno where hotelname="The Tower Hotel" and date(now()) between datefrom and dateto;
++---------+-----------------+--------+---------+---------+------------+------------+--------+
+| hotelno | hotelname       | city   | hotelno | guestno | datefrom   | dateto     | roomno |
++---------+-----------------+--------+---------+---------+------------+------------+--------+
+| fb01    | The Tower Hotel | London | fb01    |   10004 | 2021-04-15 | 2021-05-15 |    601 |
+| fb01    | The Tower Hotel | London | fb01    |   10005 | 2021-05-02 | 2021-05-07 |    501 |
++---------+-----------------+--------+---------+---------+------------+------------+--------+
+2 rows in set (0.001 sec)
+
+select * from hotel h JOIN room r ON h.hotelno=r.hotelno JOIN booking b ON r.hotelno=b.hotelno JOIN guest g ON b.guestno=g.guestno where hotelname="The Tower Hotel";
++---------+-----------------+--------+--------+---------+--------+-------+---------+---------+------------+------------+--------+---------+--------------+-----------------------+
+| hotelno | hotelname       | city   | roomno | hotelno | type   | price | hotelno | guestno | datefrom   | dateto     | roomno | guestno | guestname    | guestaddress          |
++---------+-----------------+--------+--------+---------+--------+-------+---------+---------+------------+------------+--------+---------+--------------+-----------------------+
+| fb01    | The Tower Hotel | London |    501 | fb01    | single | 19.00 | fb01    |   10001 | 2021-04-01 | 2021-04-08 |    501 |   10001 | John Kay     | 56 High St, London    |
+| fb01    | The Tower Hotel | London |    601 | fb01    | double | 29.00 | fb01    |   10001 | 2021-04-01 | 2021-04-08 |    501 |   10001 | John Kay     | 56 High St, London    |
+| fb01    | The Tower Hotel | London |    701 | fb01    | family | 39.00 | fb01    |   10001 | 2021-04-01 | 2021-04-08 |    501 |   10001 | John Kay     | 56 High St, London    |
+| fb01    | The Tower Hotel | London |    501 | fb01    | single | 19.00 | fb01    |   10001 | 2021-05-01 | NULL       |    701 |   10001 | John Kay     | 56 High St, London    |
+| fb01    | The Tower Hotel | London |    601 | fb01    | double | 29.00 | fb01    |   10001 | 2021-05-01 | NULL       |    701 |   10001 | John Kay     | 56 High St, London    |
+| fb01    | The Tower Hotel | London |    701 | fb01    | family | 39.00 | fb01    |   10001 | 2021-05-01 | NULL       |    701 |   10001 | John Kay     | 56 High St, London    |
+| fb01    | The Tower Hotel | London |    501 | fb01    | single | 19.00 | fb01    |   10002 | 2021-01-04 | 2021-01-29 |    601 |   10002 | Mike Ritchie | 18 Tain St, London    |
+| fb01    | The Tower Hotel | London |    601 | fb01    | double | 29.00 | fb01    |   10002 | 2021-01-04 | 2021-01-29 |    601 |   10002 | Mike Ritchie | 18 Tain St, London    |
+| fb01    | The Tower Hotel | London |    701 | fb01    | family | 39.00 | fb01    |   10002 | 2021-01-04 | 2021-01-29 |    601 |   10002 | Mike Ritchie | 18 Tain St, London    |
+| fb01    | The Tower Hotel | London |    501 | fb01    | single | 19.00 | fb01    |   10004 | 2021-04-15 | 2021-05-15 |    601 |   10004 | Joe Keogh    | 2 Fergus Dr, Aberdeen |
+| fb01    | The Tower Hotel | London |    601 | fb01    | double | 29.00 | fb01    |   10004 | 2021-04-15 | 2021-05-15 |    601 |   10004 | Joe Keogh    | 2 Fergus Dr, Aberdeen |
+| fb01    | The Tower Hotel | London |    701 | fb01    | family | 39.00 | fb01    |   10004 | 2021-04-15 | 2021-05-15 |    601 |   10004 | Joe Keogh    | 2 Fergus Dr, Aberdeen |
+| fb01    | The Tower Hotel | London |    501 | fb01    | single | 19.00 | fb01    |   10005 | 2021-05-02 | 2021-05-07 |    501 |   10005 | Carol Farrel | 6 Achray St, Glasgow  |
+| fb01    | The Tower Hotel | London |    601 | fb01    | double | 29.00 | fb01    |   10005 | 2021-05-02 | 2021-05-07 |    501 |   10005 | Carol Farrel | 6 Achray St, Glasgow  |
+| fb01    | The Tower Hotel | London |    701 | fb01    | family | 39.00 | fb01    |   10005 | 2021-05-02 | 2021-05-07 |    501 |   10005 | Carol Farrel | 6 Achray St, Glasgow  |
++---------+-----------------+--------+--------+---------+--------+-------+---------+---------+------------+------------+--------+---------+--------------+-----------------------+
+
+MariaDB [vacation]> select sum(price) from hotel h JOIN room r ON h.hotelno=r.hotelno JOIN booking b ON r.hotelno=b.hotelno JOIN guest g ON b.guestno=g.guestno where hotelname="The Tower Hot
+el" and date(now()) between datefrom and dateto;
++------------+
+| sum(price) |
++------------+
+|     174.00 |
++------------+
+1 row in set (0.000 sec)
+
+select sum(r.roomno),h.hotelno from hotel h JOIN room r ON h.hotelno=r.hotelno where h.city="London" group by h.hotelno;
++---------------+---------+
+| sum(r.roomno) | hotelno |
++---------------+---------+
+|          2102 | ch01    |
+|          1502 | ch02    |
+|          1803 | fb01    |
++---------------+---------+
+
+
+
+
