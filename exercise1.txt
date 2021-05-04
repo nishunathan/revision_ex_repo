@@ -5,3 +5,10 @@ git init
 
 
 git remote add origin git@github.com:nishunathan/revision_ex_repo.git
+
+
+git add exercise1.txt
+git commit -m "exercise1.txt"
+
+
+
