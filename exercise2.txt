@@ -1,0 +1,26 @@
+
+Date is in Unnormalized form
+ -> Appointment has two columns Date and time. This cannot be stored to a db in this format
+
+1NF
+- no repeating groups
+- Primary key to be defined
+  -> patient_surgery(_staffNo_,dentistName,patientNo,patientName,_appt_date_,_appt_time_,surgeryNo)
+
+2NF
+- Check if non-key elements are fully dependent on primary key. partial dependencies
+-> dentistName depends only on staffNo
+--> staff(_staffNo_,dentistName)
+--> patient_surgery(_staffNo_,patientNo,patientName,_appt_date_,_appt_time_,surgeryNo)
+
+3NF
+- transitive dependencies. Check if any non-key elements depends on any other non-key elements
+-> patientNo and patientName are dependent
+
+--> staff(_staffNo_,dentistName)
+--> patient_surgery(_staffNo_,patientNo,_appt_date_,_appt_time_,surgeryNo)
+--> patient(_patientNo_,patientName)
+
+BCNF
+- determinant key also the candidate key
+--> BCNF = 3NF
