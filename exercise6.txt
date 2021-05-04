@@ -1,0 +1,145 @@
+use college;
+
+MariaDB [college]> select concat(stdFirstName," ",stdLastName) as name,stdCity,stdGPA from student where stdGPA >= 3.7;
++------------------+---------+--------+
+| name             | stdCity | stdGPA |
++------------------+---------+--------+
+| CRISTOPHER COLAN | SEATTLE |   4.00 |
+| WILLIAM PILGRIM  | BOTHELL |   3.80 |
++------------------+---------+--------+
+2 rows in set (0.000 sec)
+
+select concat(FacFirstName," ",FacLastName) as Faculty_Name,FacHireDate from faculty where (FacHireDate like '%1999-%' or FacHireDate like '%2000-%');
++------------------+-------------+
+| Faculty_Name     | FacHireDate |
++------------------+-------------+
+| CRISTOPHER COLAN | 1999-03-01  |
+| JULIA MILLS      | 2000-03-15  |
++------------------+-------------+
+2 rows in set (0.001 sec)
+
+select OfferNo,CourseNo,FacSSN,OffTerm,OffYear from offering where ( (OffTerm = "FALL" and OffYear=2005) or (OffTerm = "WINTER" and OffYear=2006));
++---------+----------+-------------+---------+---------+
+| OfferNo | CourseNo | FacSSN      | OffTerm | OffYear |
++---------+----------+-------------+---------+---------+
+|    1234 | IS320    | 098-76-5432 | FALL    |    2005 |
+|    4321 | IS320    | 098-76-5432 | FALL    |    2005 |
+|    4444 | IS320    | 543-21-0987 | WINTER  |    2006 |
+|    5555 | FIN300   | 765-43-2109 | WINTER  |    2006 |
+|    5678 | IS480    | 987-65-4321 | WINTER  |    2006 |
+|    6666 | FIN450   | 987-65-4321 | WINTER  |    2006 |
++---------+----------+-------------+---------+---------+
+
+MariaDB [college]> select OfferNo,o.CourseNo,OffDays,OffTime,crsDesc,OffTerm,OffYear from course c JOIN offering o ON c.CourseNo=o.CourseNo where (crsDesc like '%database%' or crsDesc like '%programmi
++---------+----------+---------+----------+--------------------------------------+---------+---------+
+| OfferNo | CourseNo | OffDays | OffTime  | crsDesc                              | OffTerm | OffYear |
++---------+----------+---------+----------+--------------------------------------+---------+---------+
+|    3333 | IS320    | MW      | 08:30:00 | FUNDAMENTALS OF BUSINESS PROGRAMMING | SPRING  |    2006 |
+|    5679 | IS480    | TTH     | 15:30:00 | FUNDAMENTALS OF DATABASE MANAGEMENT  | SPRING  |    2006 |
++---------+----------+---------+----------+--------------------------------------+---------+---------+
+2 rows in set (0.001 sec)
+
+
+MariaDB [college]> select OfferNo,c.CourseNo,concat(FacFirstName," ",FacLastName) as Name from course c JOIN offering o ON c.CourseNo=o.CourseNo JOIN faculty f ON o.FacSSN=f.FacSSN where c.CourseNo like 'IS%' and FacRank="ASST" and OffTerm="FALL";
++---------+----------+---------------+
+| OfferNo | CourseNo | Name          |
++---------+----------+---------------+
+|    1234 | IS320    | LEONARD VINCE |
+|    4321 | IS320    | LEONARD VINCE |
++---------+----------+---------------+
+2 rows in set (0.000 sec)
+
+
+select avg(stdGPA),stdMajor from student group by stdMajor;
++-------------+----------+
+| avg(stdGPA) | stdMajor |
++-------------+----------+
+|    3.400000 | ACCT     |
+|    2.800000 | FIN      |
+|    3.233333 | IS       |
++-------------+----------+
+3 rows in set (0.001 sec)
+
+MariaDB [college]> select count(offerNo) as offer_cnt,count(distinct(CourseNo)) as course_cnt,OffYear from offering group by OffYear;
++-----------+------------+---------+
+| offer_cnt | course_cnt | OffYear |
++-----------+------------+---------+
+|         3 |          2 |    2005 |
+|        10 |          6 |    2006 |
++-----------+------------+---------+
+2 rows in set (0.001 sec)
+
+MariaDB [college]> select min(stdGPA),max(stdGPA),stdMajor,stdClass from student group by stdMajor,stdClass;
++-------------+-------------+----------+----------+
+| min(stdGPA) | max(stdGPA) | stdMajor | stdClass |
++-------------+-------------+----------+----------+
+|        3.50 |        3.50 | ACCT     | JR       |
+|        3.30 |        3.30 | ACCT     | SO       |
+|        2.50 |        2.70 | FIN      | JR       |
+|        3.20 |        3.20 | FIN      | SR       |
+|        3.00 |        3.00 | IS       | FR       |
+|        3.60 |        3.60 | IS       | JR       |
+|        3.80 |        3.80 | IS       | SO       |
+|        2.20 |        4.00 | IS       | SR       |
++-------------+-------------+----------+----------+
+
+select crsDesc , count(offering.OfferNo)  from course join offering on offering.CourseNo = course.CourseNo where course.CourseNo like "IS%" group by crsDesc ;
++--------------------------------------+-------------------------+
+| crsDesc                              | count(offering.OfferNo) |
++--------------------------------------+-------------------------+
+| FUNDAMENTALS OF BUSINESS PROGRAMMING |                       6 |
+| FUNDAMENTALS OF DATABASE MANAGEMENT  |                       2 |
+| SYSTEMS ANALYSIS                     |                       2 |
++--------------------------------------+-------------------------+
+
+
+select stdGPA,concat(stdFirstName," ",stdLastName) as Name,stdCity,stdState from student where stdClass = "JR" order by stdGPA;
++--------+-----------------+---------+----------+
+| stdGPA | Name            | stdCity | stdState |
++--------+-----------------+---------+----------+
+|   2.50 | ROBERTO MORALES | SEATTLE | WA       |
+|   2.70 | BOB NORBERT     | BOTHELL | WA       |
+|   3.50 | CANDY KENDALL   | TACOMA  | WA       |
+|   3.60 | MARIAH DODGE    | SEATTLE | WA       |
++--------+-----------------+---------+----------+
+
+select distinct FacCity,FacState from faculty;
++----------+----------+
+| FacCity  | FacState |
++----------+----------+
+| SEATTLE  | WA       |
+| BOTHELL  | WA       |
+| BELLEVUE | WA       |
++----------+----------+
+3 rows in set (0.001 sec)
+
+select concat(stdFirstName," ",stdLastName) as Name,e.OfferNo,stdGPA from student s JOIN enrollment e ON s.stdSSN=e.StdSSN JOIN offering o ON e.OfferNo=o.OfferNo where stdGPA >= 3.5;
++------------------+---------+--------+
+| Name             | OfferNo | stdGPA |
++------------------+---------+--------+
+| CANDY KENDALL    |    1234 |   3.50 |
+| MARIAH DODGE     |    1234 |   3.60 |
+| CRISTOPHER COLAN |    4321 |   4.00 |
+| WILLIAM PILGRIM  |    4321 |   3.80 |
+| CANDY KENDALL    |    5678 |   3.50 |
+| MARIAH DODGE     |    5678 |   3.60 |
+| WILLIAM PILGRIM  |    5679 |   3.80 |
+| CANDY KENDALL    |    6666 |   3.50 |
+| MARIAH DODGE     |    6666 |   3.60 |
+| CRISTOPHER COLAN |    7777 |   4.00 |
+| WILLIAM PILGRIM  |    7777 |   3.80 |
+| CANDY KENDALL    |    9876 |   3.50 |
+| MARIAH DODGE     |    9876 |   3.60 |
+| WILLIAM PILGRIM  |    9876 |   3.80 |
++------------------+---------+--------+
+
+select distinct(concat(stdFirstName," ",stdLastName)) as Name from student s JOIN enrollment e ON s.stdSSN=e.StdSSN JOIN offering o ON e.OfferNo=o.OfferNo where stdGPA >= 3.5;
++------------------+
+| Name             |
++------------------+
+| CANDY KENDALL    |
+| MARIAH DODGE     |
+| CRISTOPHER COLAN |
+| WILLIAM PILGRIM  |
++------------------+
+
